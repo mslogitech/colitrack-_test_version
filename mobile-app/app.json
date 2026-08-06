@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "COLITRACK",
+    "slug": "colitrack-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#0F1326"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "cm.colitrack.mobile"
+    },
+    "android": {
+      "package": "cm.colitrack.mobile",
+      "permissions": ["NOTIFICATIONS"]
+    }
+  }
+}
