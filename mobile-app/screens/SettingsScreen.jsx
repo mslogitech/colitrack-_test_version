@@ -58,14 +58,13 @@ export default function SettingsScreen() {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Adresse du serveur</Text>
         <Text style={styles.help}>
-          Exemple : http://192.168.1.42:3000/api — demandez cette adresse à votre agence
-          si vous ne la connaissez pas.
+     Saisissez l'adresse suivante dans le champ ci-dessous. https://colistracktest.mslogitech.com
         </Text>
         <TextInput
           style={styles.input}
           value={url}
           onChangeText={setUrl}
-          placeholder="http://192.168.1.42:3000/api"
+          placeholder="https://colistracktest.mslogitech.com"
           placeholderTextColor={colors.textMuted}
           autoCapitalize="none"
           autoCorrect={false}
