@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Valeur de secours si aucune adresse n'a été configurée dans l'écran Paramètres.
 // Modifiable aussi directement ici pour un déploiement en production.
-const DEFAULT_API_BASE = 'http://localhost:3000/api';
+const DEFAULT_API_BASE = https://colistracktest.mslogitech.com;
 const STORAGE_KEY_API_BASE = 'colitrack_api_base';
 
 let cachedApiBase = DEFAULT_API_BASE;
