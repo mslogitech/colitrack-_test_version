@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COLITRACK — Tableau de bord agence</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div id="login-screen" class="login-screen">
+  <div class="brand-watermark login-wm"></div>
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="login-badge">C</div>
+      <div>
+        <div class="login-name">COLITRACK</div>
+        <div class="login-sub">FiNex Voyage — Espace agence</div>
+      </div>
+    </div>
+
+    <label>Email</label>
+    <input id="login-email" type="email" placeholder="prenom.nom@finexvoyage.cm" autocomplete="username" />
+
+    <label>Mot de passe</label>
+    <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password" />
+
+    <p class="login-error" id="login-error">Email ou mot de passe incorrect.</p>
+
+    <button class="btn primary login-submit" id="login-submit" type="button">Se connecter</button>
+    <p class="login-hint" id="login-hint" style="font-size:11px;color:#6B7280;margin-top:10px;text-align:center;">Le rôle (administrateur / guichetier / agent de quai) est déterminé automatiquement par ton compte.</p>
+  </div>
+</div>
+
+<div class="app" id="app-root" style="display:none;">
+
+  <div class="sidebar">
+    <div class="logo">COLI<span>TRACK</span></div>
+    <nav>
+      <a href="#" class="nav-link active" data-view="dashboard" data-roles="chef">Tableau de bord</a>
+      <a href="#" class="nav-link" data-view="register" data-roles="chef,guichet">Enregistrer un colis</a>
+      <a href="#" class="nav-link" data-view="colis" data-roles="chef,guichet,quai">Colis</a>
+      <a href="#" class="nav-link" data-view="manifests" data-roles="chef,quai">Manifestes</a>
+      <a href="#" class="nav-link" data-view="agences" data-roles="chef">Agences</a>
+      <a href="#" class="nav-link" data-view="dashboard" data-roles="chef,guichet">Clients</a>
+      <a href="#" class="nav-link" data-view="fleet" data-roles="chef">Livreurs</a>
+      <a href="#" class="nav-link" data-view="stats" data-roles="chef">Statistiques</a>
+      <a href="#" class="nav-link" data-view="finance" data-roles="chef">Finance</a>
+      <a href="#" class="nav-link" data-view="settings" data-roles="chef">Paramètres</a>
+    </nav>
+  </div>
+
+  <div class="main">
+    <div class="brand-watermark workspace-wm"></div>
+    <div class="topbar">
+      <div>
+        <h1 id="page-title">Tableau de bord</h1>
+        <p class="breadcrumb" id="page-breadcrumb">FiNex Voyage, Yaoundé Centre · Mis à jour il y a 2 min</p>
+      </div>
+      <div class="actions">
+        <span id="api-status-dot" style="width:7px;height:7px;border-radius:50%;background:#9CA6B2;display:inline-block;margin-right:2px;"></span>
+        <span class="session-badge" id="agent-name-badge"></span>
+        <span class="session-badge" id="session-badge">Administrateur</span>
+        <button class="btn" id="logout-btn">Déconnexion</button>
+      </div>
+    </div>
+
+    <div id="view-dashboard">
+      <div class="topbar" style="margin-bottom:12px;">
+        <div></div>
+        <div class="actions">
+          <button class="btn" id="dash-refresh">Actualiser</button>
+          <button class="btn primary" data-view-link="register">Nouveau colis</button>
+        </div>
+      </div>
+    <div class="kpi-strip" style="grid-template-columns: repeat(4,1fr);">
+      <div>
+        <p class="label">Colis au total</p>
+        <p class="value" id="kpi-total">—</p>
+      </div>
+      <div>
+        <p class="label">Enregistrés (au guichet)</p>
+        <p class="value" id="kpi-enregistres">—</p>
+      </div>
+      <div>
+        <p class="label">En transit</p>
+        <p class="value" id="kpi-transit">—</p>
+      </div>
+      <div>
+        <p class="label">Livrés</p>
+        <p class="value" id="kpi-livres">—</p>
+      </div>
+    </div>
+
+    <div class="filterbar">
+      <input placeholder="Rechercher N° suivi, expéditeur, destinataire..." id="dash-search" />
+      <select id="dash-filter-statut">
+        <option value="">Tous statuts</option>
+        <option value="enregistre">Enregistré</option>
+        <option value="charge">Chargé</option>
+        <option value="depart">En route</option>
+        <option value="arrive">Livré</option>
+      </select>
+      <span class="spacer"></span>
+      <span class="count" id="dash-count"></span>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>N° suivi</th>
+          <th>Expéditeur</th>
+          <th>Origine</th>
+          <th>Destination</th>
+          <th>Statut</th>
+          <th>Poids</th>
+          <th class="right">Enregistré le</th>
+        </tr>
+      </thead>
+      <tbody id="dashboard-tbody"></tbody>
+    </table>
+    </div>
+
+    <div id="view-stats" style="display:none;">
+      <div class="spotlight-card">
+        <div class="spotlight-icon">🏆</div>
+        <div class="spotlight-body">
+          <p class="spotlight-title">Agence du mois — Bafoussam</p>
+          <p class="spotlight-text">96% de colis livrés à l'heure et un seul litige ouvert sur 512 colis traités. Meilleure ponctualité du réseau FiNex Voyage ce mois-ci.</p>
+        </div>
+        <div class="spotlight-metric">
+          <span class="spotlight-metric-value">96%</span>
+          <span class="spotlight-metric-label">ponctualité</span>
+        </div>
+      </div>
+
+      <div class="goal-card">
+        <div class="goal-head">
+          <span class="goal-title">Objectif mensuel réseau — 5 000 colis</span>
+          <span class="goal-value">4 120 / 5 000 <span class="goal-pct">(82%)</span></span>
+        </div>
+        <div class="vol-bar-track goal-track"><div class="vol-bar-fill goal-fill" style="width:82%;"></div></div>
+        <p class="goal-hint">Au rythme actuel (176 colis/jour en moyenne), l'objectif est atteignable avec 5 jours d'avance sur l'échéance.</p>
+      </div>
+
+      <div class="kpi-strip" style="grid-template-columns: repeat(4,1fr); margin-bottom: 16px;">
+        <div>
+          <p class="label">Colis / jour (moy. 7j)</p>
+          <p class="value">176</p>
+          <p class="delta up">+11% vs sem. préc.</p>
+        </div>
+        <div>
+          <p class="label">Taux de livraison à temps</p>
+          <p class="value">94,2%</p>
+          <p class="delta up">+1,3 pt</p>
+        </div>
+        <div>
+          <p class="label">Temps moyen de transit</p>
+          <p class="value">6h40</p>
+          <p class="delta flat">Stable</p>
+        </div>
+        <div>
+          <p class="label">Score de satisfaction client</p>
+          <p class="value">4,6 / 5</p>
+          <p class="delta up">+0,2 pt</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stats-card">
+          <div class="stats-card-head">
+            <span class="stats-title">Volume de colis — 14 derniers jours</span>
+          </div>
+          <div class="chart-wrap"><canvas id="volumeChart" role="img" aria-label="Graphique en ligne du volume quotidien de colis sur 14 jours">Volume quotidien entre 140 et 210 colis sur la période.</canvas></div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-head">
+            <span class="stats-title">Colis par destination</span>
+          </div>
+          <div class="chart-wrap"><canvas id="destChart" role="img" aria-label="Graphique en barres du nombre de colis par ville de destination">Douala 412, Bafoussam 268, Bamenda 190, Bamenda-nord 95, Ebolowa 88.</canvas></div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-head">
+            <span class="stats-title">Ponctualité par ligne</span>
+          </div>
+          <div class="chart-wrap"><canvas id="otdChart" role="img" aria-label="Graphique en barres du taux de livraison à l'heure par ligne de bus">Yaoundé-Douala 97%, Yaoundé-Bafoussam 92%, Yaoundé-Bamenda 88%, Yaoundé-Ebolowa 95%.</canvas></div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-head">
+            <span class="stats-title">Performance des agents (ce mois)</span>
+          </div>
+          <table class="mini-table">
+            <thead><tr><th>Agent</th><th>Rôle</th><th class="right">Colis traités</th><th class="right">Erreurs scan</th></tr></thead>
+            <tbody>
+              <tr><td>A. Mballa</td><td class="muted">Guichet</td><td class="right">412</td><td class="right">2</td></tr>
+              <tr><td>S. Njike</td><td class="muted">Quai</td><td class="right">388</td><td class="right">5</td></tr>
+              <tr><td>R. Etoa</td><td class="muted">Guichet</td><td class="right">301</td><td class="right">1</td></tr>
+              <tr><td>P. Ondoa</td><td class="muted">Quai</td><td class="right">276</td><td class="right">7</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-head">
+            <span class="stats-title">Répartition des incidents (ce mois)</span>
+          </div>
+          <div class="chart-wrap" style="height:180px;"><canvas id="incidentsChart" role="img" aria-label="Répartition des incidents par type">Retard 46%, Colis endommagé 23%, Erreur destinataire 19%, Colis perdu 12%.</canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-finance" style="display:none;">
+      <p class="finance-restricted-note">🔒 Accès réservé aux administrateurs (chefs d'agence) — ces données ne sont visibles ni par les guichetiers, ni par les agents de quai.</p>
+
+      <div class="kpi-strip" style="grid-template-columns: repeat(4,1fr); margin-bottom: 16px;">
+        <div>
+          <p class="label">Revenu du mois</p>
+          <p class="value" id="fin-revenu-mois">—</p>
+          <p class="delta flat">Depuis le 1er du mois</p>
+        </div>
+        <div>
+          <p class="label">Encaissé aujourd'hui</p>
+          <p class="value" id="fin-encaisse-jour">—</p>
+          <p class="delta flat" id="fin-transactions-jour"></p>
+        </div>
+        <div>
+          <p class="label">Taux d'encaissement</p>
+          <p class="value">94%*</p>
+          <p class="delta flat">*exemple — à activer</p>
+        </div>
+        <div>
+          <p class="label">Impayés / créances</p>
+          <p class="value">168 000 FCFA*</p>
+          <p class="delta flat">*exemple — à activer</p>
+        </div>
+      </div>
+
+      <div class="stats-grid" style="margin-bottom:16px;">
+        <div class="stats-card">
+          <div class="stats-card-head">
+            <span class="stats-title">Encaissements — 14 derniers jours</span>
+          </div>
+          <div class="chart-wrap"><canvas id="revenueChart" role="img" aria-label="Encaissements quotidiens sur 14 jours">Encaissements quotidiens entre 620 000 et 980 000 FCFA sur la période.</canvas></div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-card-head">
+            <span class="stats-title">Répartition par moyen de paiement</span>
+          </div>
+          <div class="chart-wrap" style="height:200px;"><canvas id="paymentMixChart" role="img" aria-label="Répartition des encaissements par moyen de paiement">Espèces 52%, Orange Money 28%, MTN MoMo 18%, Virement 2%.</canvas></div>
+        </div>
+      </div>
+
+      <p class="section-label" style="margin-bottom:8px;">Clôtures de caisse par guichetier — aujourd'hui</p>
+      <table class="mini-table" style="background:#fff; border:1px solid #E4E7EB; border-radius:4px; margin-bottom:16px;">
+        <thead><tr><th>Guichetier</th><th>Agence</th><th class="right">Espèces</th><th class="right">Mobile money</th><th class="right">Total déclaré</th><th class="right">Écart</th><th>Statut</th></tr></thead>
+        <tbody>
+          <tr><td>A. Mballa</td><td class="muted">Yaoundé Centre</td><td class="right">84 500 FCFA</td><td class="right">62 000 FCFA</td><td class="right">146 500 FCFA</td><td class="right">0 FCFA</td><td><span class="status livre">Clôturée</span></td></tr>
+          <tr><td>R. Etoa</td><td class="muted">Yaoundé Centre</td><td class="right">71 200 FCFA</td><td class="right">55 800 FCFA</td><td class="right">127 000 FCFA</td><td class="right">−1 500 FCFA</td><td><span class="status retard">Écart à justifier</span></td></tr>
+          <tr><td>C. Ebogo</td><td class="muted">Douala Akwa</td><td class="right">38 900 FCFA</td><td class="right">0 FCFA</td><td class="right">38 900 FCFA</td><td class="right">0 FCFA</td><td><span class="status transit">En cours</span></td></tr>
+        </tbody>
+      </table>
+
+      <p class="section-label" style="margin-bottom:8px;">Créances en attente</p>
+      <table class="mini-table" style="background:#fff; border:1px solid #E4E7EB; border-radius:4px;">
+        <thead><tr><th>N° suivi</th><th>Client</th><th>Motif</th><th class="right">Montant dû</th><th class="right">Depuis</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">CL-12301</td><td>Entreprise Nkolo &amp; Fils</td><td class="muted">Paiement à la livraison différé</td><td class="right">72 000 FCFA</td><td class="right muted">6 jours</td></tr>
+          <tr><td class="mono">CL-12288</td><td>Bernard Owona</td><td class="muted">Chèque en attente d'encaissement</td><td class="right">48 000 FCFA</td><td class="right muted">9 jours</td></tr>
+          <tr><td class="mono">CL-12254</td><td>Aïcha Sadou</td><td class="muted">Litige — remboursement partiel dû</td><td class="right">48 000 FCFA</td><td class="right muted">14 jours</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="view-register" style="display:none;">
+      <div class="form-card">
+        <div class="form-head">
+          <h2>Enregistrer un colis</h2>
+          <span class="form-sub">N° de suivi généré automatiquement à la validation · Départ : <span id="f-depart-display">—</span></span>
+        </div>
+        <p class="s-hint" id="register-error" style="display:none;color:#B42318;"></p>
+
+        <div class="form-grid">
+          <div class="form-section">
+            <p class="section-label">Expéditeur</p>
+            <label>Nom complet</label>
+            <input placeholder="Ex. Jean Dupont" id="f-sender-name" />
+            <label>Téléphone</label>
+            <input placeholder="6XX XXX XXX" id="f-sender-phone" />
+          </div>
+
+          <div class="form-section">
+            <p class="section-label">Destinataire</p>
+            <label>Nom complet</label>
+            <input placeholder="Ex. Marie Curie" id="f-recipient-name" />
+            <label>Téléphone</label>
+            <input placeholder="6XX XXX XXX" id="f-recipient-phone" />
+          </div>
+
+          <div class="form-section">
+            <p class="section-label">Trajet</p>
+            <label>Ville de destination</label>
+            <select id="f-dest">
+              <option value="">Sélectionner...</option>
+              <option value="Douala">Douala</option>
+              <option value="Bafoussam">Bafoussam</option>
+              <option value="Bamenda">Bamenda</option>
+              <option value="Ebolowa">Ebolowa</option>
+            </select>
+            <label>Ligne / bus</label>
+            <select>
+              <option>VIP 03 — Départ 14h30</option>
+              <option>Standard 07 — Départ 16h00</option>
+            </select>
+          </div>
+
+          <div class="form-section">
+            <p class="section-label">Colis</p>
+            <label>Description</label>
+            <input placeholder="Ex. Documents, vêtements..." id="f-description" />
+            <label>Poids (kg)</label>
+            <input type="number" min="0" step="0.1" value="1.0" id="f-weight" />
+          </div>
+        </div>
+
+        <div class="form-summary">
+          <div>
+            <span class="s-label">Tarif de base</span>
+            <span class="s-value" id="s-base">— FCFA</span>
+          </div>
+          <div>
+            <span class="s-label">Supplément poids</span>
+            <span class="s-value" id="s-weight">0 FCFA</span>
+          </div>
+          <div class="total">
+            <span class="s-label">Total à encaisser</span>
+            <span class="s-value" id="s-total">— FCFA</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn" id="f-cancel" type="button">Annuler</button>
+          <button class="btn primary" id="f-submit" type="button">Enregistrer le colis</button>
+        </div>
+      </div>
+
+      <div class="form-card" id="register-success" style="display:none; margin-top:14px;">
+        <div class="form-head">
+          <h2>Colis enregistré ✓</h2>
+          <span class="form-sub">N° de suivi : <strong id="success-id"></strong></span>
+        </div>
+        <div style="display:flex; gap:20px; align-items:center;">
+          <img id="success-qr" width="120" height="120" style="border:1px solid #E4E7EB; border-radius:4px;" alt="QR code de suivi du colis" />
+          <div>
+            <p class="s-hint" style="margin:0 0 10px;">Le destinataire et l'expéditeur peuvent suivre ce colis avec ce numéro. Le code QR sera scanné par l'agent de quai à chaque étape.</p>
+            <button class="btn" id="success-new">Enregistrer un autre colis</button>
+            <button class="btn primary" id="success-view" style="margin-left:6px;">Voir dans "Colis"</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-settings" style="display:none;">
+      <div class="settings-layout">
+
+        <div class="settings-nav">
+          <a href="#" class="s-nav-link active" data-panel="p-users">Utilisateurs et accès</a>
+          <a href="#" class="s-nav-link" data-panel="p-network">Agence et réseau</a>
+          <a href="#" class="s-nav-link" data-panel="p-tarifs">Grille tarifaire</a>
+          <a href="#" class="s-nav-link" data-panel="p-payments">Paiements</a>
+          <a href="#" class="s-nav-link" data-panel="p-notif">Notifications et alertes</a>
+          <a href="#" class="s-nav-link" data-panel="p-print">Bordereau et impression</a>
+          <a href="#" class="s-nav-link" data-panel="p-security">Sécurité et audit</a>
+          <a href="#" class="s-nav-link" data-panel="p-locale">Langue et localisation</a>
+        </div>
+
+        <div class="settings-panels">
+
+          <div class="s-panel" id="p-users">
+            <div class="s-panel-head">
+              <h2>Utilisateurs et accès</h2>
+              <button class="btn primary">Ajouter un utilisateur</button>
+            </div>
+            <table class="mini-table">
+              <thead><tr><th>Nom</th><th>Rôle</th><th>Agence</th><th>Statut</th><th class="right">Action</th></tr></thead>
+              <tbody>
+                <tr><td>A. Mballa</td><td class="muted">Guichetier</td><td class="muted">Yaoundé Centre</td><td><span class="status livre">Actif</span></td><td class="right"><a href="#" class="link">Modifier</a></td></tr>
+                <tr><td>S. Njike</td><td class="muted">Agent de quai</td><td class="muted">Yaoundé Centre</td><td><span class="status livre">Actif</span></td><td class="right"><a href="#" class="link">Modifier</a></td></tr>
+                <tr><td>R. Etoa</td><td class="muted">Chef d'agence</td><td class="muted">Yaoundé Centre</td><td><span class="status livre">Actif</span></td><td class="right"><a href="#" class="link">Modifier</a></td></tr>
+                <tr><td>P. Ondoa</td><td class="muted">Agent de quai</td><td class="muted">Douala</td><td><span class="status retard">Suspendu</span></td><td class="right"><a href="#" class="link">Modifier</a></td></tr>
+              </tbody>
+            </table>
+            <p class="s-hint">Les permissions par rôle (validation de litige, modification de tarif, accès aux statistiques) se gèrent depuis la fiche de chaque rôle.</p>
+          </div>
+
+          <div class="s-panel" id="p-network" style="display:none;">
+            <div class="s-panel-head"><h2>Agence et réseau</h2></div>
+            <div class="form-grid">
+              <div class="form-section">
+                <p class="section-label">Agence</p>
+                <label>Nom de l'agence</label>
+                <input value="Yaoundé Centre" />
+                <label>Adresse</label>
+                <input value="Avenue Kennedy, Yaoundé" />
+              </div>
+              <div class="form-section">
+                <p class="section-label">Horaires</p>
+                <label>Ouverture</label>
+                <input value="05:30" />
+                <label>Fermeture</label>
+                <input value="21:00" />
+              </div>
+            </div>
+            <p class="s-hint">Les lignes et horaires de bus se gèrent ligne par ligne ci-dessous.</p>
+            <table class="mini-table">
+              <thead><tr><th>Ligne</th><th>Départs</th><th>Capacité colis</th><th class="right">Statut</th></tr></thead>
+              <tbody>
+                <tr><td>Yaoundé → Douala</td><td class="muted">05h30, 09h00, 14h30</td><td class="muted">60 / trajet</td><td class="right"><span class="status livre">Active</span></td></tr>
+                <tr><td>Yaoundé → Bafoussam</td><td class="muted">07h00, 16h00</td><td class="muted">45 / trajet</td><td class="right"><span class="status livre">Active</span></td></tr>
+                <tr><td>Yaoundé → Bamenda</td><td class="muted">08h00</td><td class="muted">40 / trajet</td><td class="right"><span class="status transit">Réduite</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="s-panel" id="p-tarifs" style="display:none;">
+            <div class="s-panel-head"><h2>Grille tarifaire</h2></div>
+            <table class="mini-table">
+              <thead><tr><th>Destination</th><th class="right">Tarif de base</th><th class="right">Franchise poids</th><th class="right">Supplément / kg au-delà</th></tr></thead>
+              <tbody>
+                <tr><td>Douala</td><td class="right">4 500 FCFA</td><td class="right">2 kg</td><td class="right">500 FCFA</td></tr>
+                <tr><td>Bafoussam</td><td class="right">3 000 FCFA</td><td class="right">2 kg</td><td class="right">400 FCFA</td></tr>
+                <tr><td>Bamenda</td><td class="right">6 200 FCFA</td><td class="right">2 kg</td><td class="right">600 FCFA</td></tr>
+                <tr><td>Ebolowa</td><td class="right">2 500 FCFA</td><td class="right">2 kg</td><td class="right">350 FCFA</td></tr>
+              </tbody>
+            </table>
+            <p class="s-hint">Ces valeurs alimentent directement le calcul automatique du formulaire "Enregistrer un colis".</p>
+          </div>
+
+          <div class="s-panel" id="p-payments" style="display:none;">
+            <div class="s-panel-head"><h2>Paiements</h2></div>
+            <div class="form-section">
+              <p class="section-label">Méthodes acceptées</p>
+              <label class="checkline"><input type="checkbox" checked /> Espèces</label>
+              <label class="checkline"><input type="checkbox" checked /> Orange Money</label>
+              <label class="checkline"><input type="checkbox" checked /> MTN MoMo</label>
+              <label class="checkline"><input type="checkbox" /> Virement bancaire</label>
+            </div>
+            <p class="s-hint">La clôture de caisse quotidienne rapproche automatiquement les encaissements espèces et mobile money par guichetier.</p>
+          </div>
+
+          <div class="s-panel" id="p-notif" style="display:none;">
+            <div class="s-panel-head"><h2>Notifications et alertes</h2></div>
+            <div class="form-section">
+              <p class="section-label">Notifications client (SMS)</p>
+              <label class="checkline"><input type="checkbox" checked /> Colis enregistré</label>
+              <label class="checkline"><input type="checkbox" checked /> Colis en transit</label>
+              <label class="checkline"><input type="checkbox" checked /> Colis livré</label>
+            </div>
+            <div class="form-section">
+              <p class="section-label">Alertes internes</p>
+              <label>Colis bloqué au quai depuis plus de</label>
+              <input value="6 heures" style="max-width:160px;" />
+              <label>Retard de ligne signalé après</label>
+              <input value="30 minutes" style="max-width:160px;" />
+            </div>
+          </div>
+
+          <div class="s-panel" id="p-print" style="display:none;">
+            <div class="s-panel-head"><h2>Bordereau et impression</h2></div>
+            <div class="form-section">
+              <p class="section-label">Modèle de bordereau</p>
+              <label>Format</label>
+              <select style="max-width:220px;"><option>Ticket thermique 80mm</option><option>A5</option></select>
+              <label class="checkline"><input type="checkbox" checked /> Inclure le QR code de suivi</label>
+              <label class="checkline"><input type="checkbox" checked /> Inclure le logo de l'agence</label>
+            </div>
+          </div>
+
+          <div class="s-panel" id="p-security" style="display:none;">
+            <div class="s-panel-head"><h2>Sécurité et audit</h2></div>
+            <p class="s-hint">Journal des actions récentes (lecture seule).</p>
+            <table class="mini-table">
+              <thead><tr><th>Date</th><th>Utilisateur</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td class="muted">27/07 09:14</td><td>A. Mballa</td><td>Colis CL-12345 enregistré</td></tr>
+                <tr><td class="muted">27/07 08:52</td><td>R. Etoa</td><td>Tarif Douala modifié</td></tr>
+                <tr><td class="muted">26/07 18:03</td><td>S. Njike</td><td>Litige CL-12102 clôturé</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="s-panel" id="p-locale" style="display:none;">
+            <div class="s-panel-head"><h2>Langue et localisation</h2></div>
+            <div class="form-section">
+              <label>Langue</label>
+              <select style="max-width:200px;"><option>Français</option><option>English</option></select>
+              <label>Devise</label>
+              <select style="max-width:200px;"><option>FCFA (XAF)</option></select>
+              <label>Fuseau horaire</label>
+              <select style="max-width:200px;"><option>Afrique/Douala (WAT)</option></select>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div id="view-fleet" style="display:none;">
+      <div class="topbar" style="margin-bottom:12px;">
+        <div></div>
+        <div class="actions"><button class="btn primary">Ajouter un bus</button></div>
+      </div>
+
+      <div class="fleet-layout">
+        <div class="fleet-list">
+          <table class="mini-table" id="fleet-table">
+            <thead><tr><th>Bus</th><th>Ligne / destination</th><th>Chauffeur</th><th>Statut</th><th></th></tr></thead>
+            <tbody id="fleet-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="fleet-detail" id="fleet-detail">
+          <p class="s-hint">Sélectionnez un bus dans la liste pour voir et modifier ses informations.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-colis" style="display:none;">
+      <div class="fleet-layout">
+        <div class="fleet-list">
+          <div class="filterbar" style="border-radius:4px; border:1px solid #E4E7EB; margin-bottom:10px;">
+            <input placeholder="Rechercher N° suivi, expéditeur, destinataire..." id="colis-search" />
+            <select id="colis-filter-statut">
+              <option value="">Tous statuts</option>
+              <option value="enregistre">Enregistré</option>
+              <option value="charge">Chargé</option>
+              <option value="depart">En route</option>
+              <option value="arrive">Livré</option>
+            </select>
+            <span class="spacer"></span>
+            <span class="count" id="colis-count"></span>
+          </div>
+          <table class="mini-table">
+            <thead><tr><th>N° suivi</th><th>Expéditeur</th><th>Destination</th><th>Statut</th></tr></thead>
+            <tbody id="colis-tbody"></tbody>
+          </table>
+        </div>
+        <div class="fleet-detail" id="colis-detail">
+          <p class="s-hint">Sélectionnez un colis pour voir son parcours complet.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-manifests" style="display:none;">
+      <div class="fleet-layout">
+        <div class="fleet-list">
+          <table class="mini-table">
+            <thead><tr><th>Manifeste</th><th>Ligne</th><th>Départ</th><th class="right">Colis</th><th>Statut</th><th></th></tr></thead>
+            <tbody id="manifests-tbody"></tbody>
+          </table>
+        </div>
+        <div class="fleet-detail" id="manifests-detail">
+          <p class="s-hint">Sélectionnez un manifeste pour voir la liste des colis chargés.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="view-agences" style="display:none;">
+      <div class="topbar" style="margin-bottom:12px;">
+        <div></div>
+        <div class="actions"><button class="btn primary">Ajouter une agence</button></div>
+      </div>
+      <table class="mini-table" style="background:#fff; border:1px solid #E4E7EB; border-radius:4px;" id="agences-table">
+        <thead><tr><th>Agence</th><th>Chef d'agence</th><th class="right">Colis / mois</th><th class="right">Taux à l'heure</th><th class="right">Litiges ouverts</th><th>Volume relatif</th></tr></thead>
+        <tbody id="agences-tbody"></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+<!-- Config locale (à créer : copie js/config.example.js en js/config.js) -->
+<script src="js/config.js"></script>
+
+<script src="js/supabase-init.js"></script>
+<script src="js/api.js"></script>
+<script src="js/nav.js"></script>
+
+<script src="js/views/dashboard.js"></script>
+<script src="js/views/register.js"></script>
+<script src="js/views/colis.js"></script>
+<script src="js/views/finance.js"></script>
+<script src="js/views/stats.js"></script>
+<script src="js/views/fleet.js"></script>
+<script src="js/views/manifests.js"></script>
+<script src="js/views/agences.js"></script>
+<script src="js/settings.js"></script>
+
+<!-- auth.js en dernier : il restaure la session et déclenche le premier rendu -->
+<script src="js/auth.js"></script>
+</body>
+</html>
