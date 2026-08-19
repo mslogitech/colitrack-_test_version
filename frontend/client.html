@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Espace client — COLITRACK</title>
+<link rel="stylesheet" href="css/public.css">
+</head>
+<body>
+
+<div class="public-header">
+  <div class="badge">C</div>
+  <div class="name">COLI<span>TRACK</span></div>
+</div>
+
+<div class="public-nav">
+  <a href="track.html">Suivre un colis</a>
+  <a href="client.html" class="active">Espace client</a>
+  <a href="index.html">Espace agence</a>
+</div>
+
+<div class="public-container">
+
+  <!-- Connexion -->
+  <div class="card" id="login-card">
+    <h1>Connexion</h1>
+    <p class="sub">Connecte-toi pour envoyer un colis et suivre ton historique.</p>
+    <label>Email</label>
+    <input id="login-email" type="email" autocomplete="username" />
+    <label>Mot de passe</label>
+    <input id="login-pass" type="password" autocomplete="current-password" />
+    <button class="btn primary" id="login-btn">Se connecter</button>
+    <p class="error-msg" id="login-error"></p>
+    <p class="link-switch">Pas encore de compte ? <a id="show-register">S'inscrire</a></p>
+  </div>
+
+  <!-- Inscription -->
+  <div class="card" id="register-card" style="display:none;">
+    <h1>Créer un compte</h1>
+    <p class="sub">Nécessaire uniquement pour envoyer un colis. Le suivi reste ouvert à tous, sans compte.</p>
+    <label>Nom complet</label>
+    <input id="register-name" />
+    <label>Téléphone</label>
+    <input id="register-phone" placeholder="6XX XXX XXX" />
+    <label>Email</label>
+    <input id="register-email" type="email" autocomplete="username" />
+    <label>Mot de passe</label>
+    <input id="register-pass" type="password" autocomplete="new-password" placeholder="6 caractères minimum" />
+    <button class="btn primary" id="register-btn">Créer mon compte</button>
+    <p class="error-msg" id="register-error"></p>
+    <p class="link-switch">Déjà un compte ? <a id="show-login">Se connecter</a></p>
+  </div>
+
+  <!-- Espace connecté -->
+  <div id="app-area" style="display:none;">
+    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div style="font-weight:700;" id="welcome-name"></div>
+        <div class="sub" style="margin:0;" id="welcome-email"></div>
+      </div>
+      <button class="btn" id="logout-btn" style="width:auto; margin-top:0; padding:8px 14px;">Déconnexion</button>
+    </div>
+
+    <div class="card">
+      <h2>Envoyer un colis</h2>
+      <p class="sub">Tes coordonnées (nom, téléphone, email) sont utilisées automatiquement comme expéditeur.</p>
+
+      <label>Ville de départ</label>
+      <select id="send-depart">
+        <option value="Yaoundé">Yaoundé</option>
+        <option value="Douala">Douala</option>
+        <option value="Bafoussam">Bafoussam</option>
+        <option value="Bamenda">Bamenda</option>
+        <option value="Ebolowa">Ebolowa</option>
+      </select>
+
+      <label>Ville d'arrivée</label>
+      <select id="send-arrivee">
+        <option value="Douala">Douala</option>
+        <option value="Yaoundé">Yaoundé</option>
+        <option value="Bafoussam">Bafoussam</option>
+        <option value="Bamenda">Bamenda</option>
+        <option value="Ebolowa">Ebolowa</option>
+      </select>
+
+      <label>Nom du destinataire</label>
+      <input id="send-dest-name" />
+      <label>Téléphone du destinataire</label>
+      <input id="send-dest-phone" placeholder="6XX XXX XXX" />
+      <label>Email du destinataire (optionnel, pour le notifier)</label>
+      <input id="send-dest-email" type="email" />
+      <label>Description du colis</label>
+      <input id="send-description" placeholder="Ex. Documents, vêtements..." />
+      <label>Poids (kg)</label>
+      <input id="send-weight" type="number" min="0" step="0.1" value="1.0" />
+
+      <button class="btn accent" id="send-btn">Enregistrer le colis</button>
+      <p class="error-msg" id="send-error"></p>
+    </div>
+
+    <div class="card" id="send-success" style="display:none;">
+      <h2>Colis enregistré ✓</h2>
+      <p class="tracking-id" id="success-id"></p>
+      <img id="success-qr" width="120" height="120" style="border:1px solid #E4E7EB;border-radius:6px;margin-top:8px;" alt="QR code du colis" />
+      <p class="sub" style="margin-top:10px;">Garde ce numéro — il te permet de suivre le colis, et l'agent de quai le scannera à chaque étape.</p>
+    </div>
+
+    <div class="card">
+      <h2>Mes colis</h2>
+      <div id="my-colis-list"><p class="sub">Chargement…</p></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="js/supabase-init.js"></script>
+<script src="js/client.js"></script>
+</body>
+</html>

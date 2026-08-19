@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suivre un colis — COLITRACK</title>
+<link rel="stylesheet" href="css/public.css">
+</head>
+<body>
+
+<div class="public-header">
+  <div class="badge">C</div>
+  <div class="name">COLI<span>TRACK</span></div>
+</div>
+
+<div class="public-nav">
+  <a href="track.html" class="active">Suivre un colis</a>
+  <a href="client.html">Espace client</a>
+  <a href="index.html">Espace agence</a>
+</div>
+
+<div class="public-container">
+
+  <div class="card" id="search-card">
+    <h1>Suivre un colis</h1>
+    <p class="sub">Entre ton numéro de suivi, ou scanne le QR code du bordereau.</p>
+
+    <label>Numéro de suivi</label>
+    <input id="track-input" placeholder="Ex. CLT-260818-4F2A" autocapitalize="characters" />
+
+    <div class="btn-row" style="margin-top:14px;">
+      <button class="btn primary" id="track-search-btn">Suivre</button>
+      <button class="btn" id="track-scan-btn">📷 Scanner un QR code</button>
+    </div>
+
+    <p class="error-msg" id="track-error"></p>
+  </div>
+
+  <div class="card" id="result-card" style="display:none;">
+    <div id="result-content"></div>
+    <button class="btn" id="track-new-search" style="margin-top:16px;">Suivre un autre colis</button>
+  </div>
+
+</div>
+
+<div class="scanner-overlay" id="scanner-overlay" style="display:none;">
+  <div class="scanner-box">
+    <div class="scanner-head">
+      <span>SCANNER LE QR CODE</span>
+      <button id="scanner-close">✕</button>
+    </div>
+    <div class="scanner-video-wrap">
+      <video id="scanner-video" muted playsinline></video>
+      <canvas id="scanner-canvas" style="display:none;"></canvas>
+    </div>
+    <div class="scanner-status" id="scanner-status">Recherche du QR code…</div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/track.js"></script>
+</body>
+</html>

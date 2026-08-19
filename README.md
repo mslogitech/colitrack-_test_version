@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # COLITRACK — Gestion administrative (Phase 1 : Agence)
 
 Suivi de colis pour ... Voyage. Ce dépôt contient deux dossiers indépendants :
@@ -107,3 +108,7 @@ Ne commite jamais `.env`. Sur le VPS, crée-le directement (`nano backend/.env`)
 - Brancher réellement le module **Finance** (table `encaissements` déjà créée dans le schéma — il reste à appeler `POST /api/finance/encaissements` au moment de l'enregistrement d'un colis, et à construire les agrégats journaliers pour les graphiques).
 - Créer les tables `bus`, `manifestes`, `agences_reseau` pour rendre Flotte / Manifestes / Agences réels.
 - Partie **Client** (suivi public d'un colis sans authentification, avec scan QR côté client) — c'était la phase 2 déjà évoquée au tout début du projet.
+=======
+# colitrack_v2
+version 2
+>>>>>>> 32ea9f7aa3d0d2b19fe83b19648ad256f6a432fa
